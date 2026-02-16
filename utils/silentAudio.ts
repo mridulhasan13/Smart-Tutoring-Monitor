@@ -1,0 +1,9 @@
+
+// Utility to create a silent audio buffer for background persistence
+// This allows the browser to keep the "media session" active even when locked.
+
+export const createSilentAudio = (): string => {
+    // 1 second of silent MP3 data (base64)
+    const silentMp3 = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTSVMAAAAPAAADTGF2ZjU4LjI5LjEwMAAAAAAAAAAAAAAA//OEAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAAEAAABIADAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMD//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjU0AAAAAAAAAAAAAAAAJAAAAAAAAAAAASAA82AvAAAAAAA//OEAAAAAAA0gAAAAAAABAAA0gAAABAAA//OEAAAAAAA0gAAAAAAABAAA0gAAABAAA//OEAAAAAAA0gAAAAAAABAAA0gAAABAAA//OEAAAAAAA0gAAAAAAABAAA0gAAABAAA//OEAAAAAAA0gAAAAAAABAAA0gAAABAAA//OEAAAAAAA0gAAAAAAABAAA0gAAABAAA//OEAAAAAAA0gAAAAAAABAAA0gAAABAAA//OEAAAAAAA0gAAAAAAABAAA0gAAABAAA';
+    return silentMp3;
+};

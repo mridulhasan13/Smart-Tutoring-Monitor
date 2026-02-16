@@ -1,0 +1,7 @@
+{
+  "name": "Smart Tutoring Monitor",
+  "description": "A refined, professional tutoring management platform with structured AI insights and high-fidelity tracking.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
