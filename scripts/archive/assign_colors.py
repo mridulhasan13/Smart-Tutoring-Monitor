@@ -3,8 +3,8 @@ import time
 from supabase import create_client, Client
 
 # Configuration
-url: str = "https://wuhyevecubtsuioklbvz.supabase.co"
-key: str = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind1aHlldmVjdWJ0c3Vpb2tsYnZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5ODg3NDIsImV4cCI6MjA4NjU2NDc0Mn0.GuB7E4wajxvE_zdhYdCKw2RRxsgnc_gfFYjVdUvoyxI"
+url: str = "YOUR_SUPABASE_URL"
+key: str = "YOUR_SUPABASE_ANON_KEY"
 
 COLORS = ['#2563eb', '#06b6d4', '#7c3aed', '#db2777', '#059669', '#d97706', '#4f46e5', '#be123c']
 
