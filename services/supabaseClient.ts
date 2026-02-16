@@ -12,5 +12,12 @@ if (!supabaseUrl || !supabaseAnonKey) {
 // Ensure the app doesn't crash immediately if keys are missing
 export const supabase = createClient(
     supabaseUrl || 'https://placeholder-url.supabase.co',
-    supabaseAnonKey || 'placeholder-key'
+    supabaseAnonKey || 'placeholder-key',
+    {
+        auth: {
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: true
+        }
+    }
 );

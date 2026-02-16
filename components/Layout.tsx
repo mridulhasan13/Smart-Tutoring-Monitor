@@ -26,6 +26,7 @@ const Layout: React.FC<LayoutProps> = ({ children, activeView, setView, onLogout
 
   return (
     <div className="h-screen w-screen overflow-hidden flex flex-col md:flex-row bg-[#f8fafc] dark:bg-[#020617] transition-colors duration-300">
+
       {/* Mobile Header */}
       <div className="md:hidden flex items-center justify-between p-4 bg-[#020617] text-white shadow-lg sticky top-0 z-50 pt-[env(safe-area-inset-top,1rem)]">
         <button
@@ -55,11 +56,12 @@ const Layout: React.FC<LayoutProps> = ({ children, activeView, setView, onLogout
         ></div>
       )}
 
-      {/* Sidebar - FIXED & NON-SCROLLING */}
+      {/* Sidebar - NOW SCROLLABLE FOR MOBILE ACCESSIBILITY */}
       <aside className={`
         fixed inset-y-0 left-0 z-50 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
         md:translate-x-0 transition duration-300 ease-in-out
-        w-64 bg-[#020617] text-slate-100 flex flex-col h-screen shrink-0 shadow-xl md:shadow-none
+        w-64 bg-[#020617] text-slate-100 flex flex-col h-[100dvh] shrink-0 shadow-xl md:shadow-none
+        overflow-y-auto custom-scrollbar
       `}>
         <div
           className="p-8 block shrink-0 cursor-pointer group"
@@ -75,7 +77,7 @@ const Layout: React.FC<LayoutProps> = ({ children, activeView, setView, onLogout
           <div className="h-px w-full bg-slate-800 mt-6 opacity-30"></div>
         </div>
 
-        <nav className="flex-1 px-4 space-y-1.5 mt-2 overflow-y-auto custom-scrollbar">
+        <nav className="px-4 space-y-1.5 mt-2">
           {menuItems.map((item) => (
             <button
               key={item.id}
