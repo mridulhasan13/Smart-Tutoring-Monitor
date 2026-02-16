@@ -202,9 +202,9 @@ const Dashboard: React.FC<DashboardProps> = ({ data, onRefresh, onNavigate }) =>
       const saved = await dbService.addSession(newSession);
       setActiveSession(saved);
       await onRefresh();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to start session:", error);
-      alert("Could not start session. Please try again.");
+      alert(`Could not start session: ${error.message || 'Unknown error'}. Please try again.`);
       setActiveSession(null);
       if (audioRef.current) audioRef.current.pause();
       clearMediaSession();
