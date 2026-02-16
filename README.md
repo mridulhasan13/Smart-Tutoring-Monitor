@@ -1,12 +1,9 @@
-<div align="center">
-<img width="1200" height="475" alt="Tuition Monitor Banner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
 
-# 🚀 Smart Tutoring Monitor
+#  Smart Tutoring Monitor
 
 **Smart Tutoring Monitor** is a premium, AI-driven platform designed for educators to manage their tutoring sessions, students, and finances with surgical precision. This is a **Vibe Coding** project—built at the speed of thought through a symbiotic collaboration between human creativity and advanced AI agents.
 
-## ✨ What does it do?
+## What does it do?
 
 Smart Tutoring Monitor transforms the chaotic workflow of private tutoring into a streamlined, automated experience:
 - **Live Session Tracking**: Real-time timer with background session persistence and lock-screen media controls.
@@ -16,7 +13,7 @@ Smart Tutoring Monitor transforms the chaotic workflow of private tutoring into 
 - **Mobile Optimized**: A "Single-Page" compact dashboard designed specifically for high-efficiency mobile use.
 - **PWA Ready**: Installable on iOS and Android for a native app-like experience.
 
-## 🏗️ Project Structure
+##  Project Structure
 
 The project follows a modular and scalable architecture:
 ```text
@@ -29,7 +26,7 @@ The project follows a modular and scalable architecture:
 └── index.css            # Advanced animations and global design system
 ```
 
-## 🛠️ How to run it
+## How to run it
 
 **Prerequisites:** Node.js (v18+)
 
@@ -58,6 +55,3 @@ Developed with ❤️ by **Mahmudul Hasan Mridul**.
 *This project is a testament to the power of "Vibe Coding"—where the focus is on the flow, the design, and the ultimate user experience.*
 
 ---
-<div align="center">
-  <b>Powered by AI Studio | Intelligent Education Management</b>
-</div>
