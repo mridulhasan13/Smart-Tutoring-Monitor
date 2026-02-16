@@ -174,15 +174,21 @@ const Settings: React.FC<SettingsProps> = ({ profile, onProfileUpdate }) => {
         }
     };
 
+    // Deletion State
+    const [deleteConfirm, setDeleteConfirm] = useState('');
+    const [isDeleting, setIsDeleting] = useState(false);
+
     const handleDeleteAccount = async () => {
-        const confirm = window.confirm("Are you sure you want to delete your account? This will permanently erase ALL your data.");
-        if (confirm) {
-            try {
-                await dbService.deleteUserAccount();
-                window.location.reload();
-            } catch (error) {
-                alert("Failed to delete account. Please try again.");
-            }
+        if (deleteConfirm !== 'DELETE') return;
+
+        setIsDeleting(true);
+        try {
+            await dbService.deleteUserAccount();
+            localStorage.clear(); // Wipe everything
+            window.location.reload();
+        } catch (error) {
+            alert("Failed to delete account. Please try again.");
+            setIsDeleting(false);
         }
     };
 
@@ -496,20 +502,36 @@ const Settings: React.FC<SettingsProps> = ({ profile, onProfileUpdate }) => {
             </section>
 
             {/* 4. Danger Zone */}
-            <section className="bg-rose-50/50 dark:bg-rose-900/10 backdrop-blur-md rounded-2xl p-8 border border-rose-100 dark:border-rose-900/30 transition-all hover:bg-rose-50/80 dark:hover:bg-rose-900/20">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h4 className="text-base font-bold text-rose-900 dark:text-rose-200 uppercase tracking-tight">Delete Account</h4>
-                        <p className="text-sm text-rose-700/80 dark:text-rose-400/80 font-medium mt-1">
-                            Permanently remove your account and all data.
+            <section className="bg-rose-50/50 dark:bg-rose-900/10 backdrop-blur-md rounded-2xl p-8 border border-rose-100 dark:border-rose-900/30 transition-all">
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                    <div className="space-y-1">
+                        <h4 className="text-xl font-black text-rose-600 dark:text-rose-500 uppercase tracking-tight">Danger Zone</h4>
+                        <p className="text-sm text-slate-500 dark:text-slate-400 font-medium max-w-md">
+                            Deleting your account will permanently wipe all your students, sessions, payments, and profile data. This action is irreversible.
                         </p>
                     </div>
-                    <button
-                        onClick={handleDeleteAccount}
-                        className="px-5 py-2 bg-white dark:bg-rose-950 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800 rounded-lg font-bold text-xs uppercase tracking-wide hover:bg-rose-50 dark:hover:bg-rose-900/40 transition-all hover:shadow-sm"
-                    >
-                        Delete
-                    </button>
+                    <div className="w-full md:w-auto space-y-3">
+                        <div className="space-y-2">
+                            <p className="text-[10px] font-black text-rose-400 uppercase tracking-widest text-center md:text-left">Type <span className="text-rose-600">DELETE</span> to confirm</p>
+                            <input
+                                type="text"
+                                placeholder="Type DELETE"
+                                className="w-full md:w-48 px-4 py-2 rounded-xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-rose-600 font-black text-sm focus:border-rose-500 focus:ring-1 focus:ring-rose-500 outline-none text-center"
+                                value={deleteConfirm}
+                                onChange={(e) => setDeleteConfirm(e.target.value)}
+                            />
+                        </div>
+                        <button
+                            onClick={handleDeleteAccount}
+                            disabled={deleteConfirm !== 'DELETE' || isDeleting}
+                            className={`w-full px-5 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all shadow-lg ${deleteConfirm === 'DELETE'
+                                    ? 'bg-rose-600 text-white hover:bg-rose-700 shadow-rose-500/20'
+                                    : 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed border border-slate-200 dark:border-slate-700 shadow-none'
+                                }`}
+                        >
+                            {isDeleting ? <><i className="fas fa-spinner fa-spin mr-2"></i> Wiping Data...</> : 'Confirm Permanent Deletion'}
+                        </button>
+                    </div>
                 </div>
             </section>
 

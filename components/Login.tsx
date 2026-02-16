@@ -66,39 +66,17 @@ const Login: React.FC<LoginProps> = ({ onLogin, onForgotPassword }) => {
 
     // Always fetch a branding image in the background regardless of saved state
     const fetchBranding = async (email?: string) => {
-      // 1. Try saved email first if provided
       if (email) {
-        const { data: prof, error: profError } = await supabase
+        const { data: prof } = await supabase
           .from('profiles')
           .select('full_name, avatar_url')
           .ilike('email', email)
           .maybeSingle();
 
         if (prof) {
-          if (prof.avatar_url) {
-            setReturningAvatar(prof.avatar_url);
-          } else {
-            setReturningAvatar(null);
-          }
-
-          if (prof.full_name) {
-            setReturningName(prof.full_name);
-          }
+          if (prof.avatar_url) setReturningAvatar(prof.avatar_url);
+          if (prof.full_name) setReturningName(prof.full_name);
         }
-      }
-    };
-
-    // Fetch all available profiles for the quick login selector
-    const fetchAllProfiles = async () => {
-      const { data: profiles, error } = await supabase
-        .from('profiles')
-        .select('id, full_name, email, avatar_url')
-        .not('email', 'is', null)
-        .neq('email', '')
-        .order('full_name', { ascending: true });
-
-      if (profiles) {
-        setAvailableProfiles(profiles);
       }
     };
 
@@ -108,11 +86,8 @@ const Login: React.FC<LoginProps> = ({ onLogin, onForgotPassword }) => {
       if (savedAvatar) setReturningAvatar(savedAvatar);
       if (savedName) setReturningName(savedName);
       fetchBranding(savedEmail);
-    } else {
-      fetchBranding();
     }
-    fetchAllProfiles();
-  }, [mode]); // Re-fetch on mode switch to catch newly registered profile
+  }, [mode]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -362,44 +337,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, onForgotPassword }) => {
                   </div>
                 </div>
               ) : (
-                <div className="space-y-6 animate-stagger-1">
-                  {availableProfiles.length > 0 && (
-                    <div className="space-y-3">
-                      <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-1 text-center">
-                        Select Authorized Account
-                      </label>
-                      <div className="flex gap-4 overflow-x-auto pb-4 px-2 no-scrollbar justify-center">
-                        {availableProfiles.map((prof) => (
-                          <button
-                            key={prof.id}
-                            type="button"
-                            onClick={() => selectAccount(prof)}
-                            className="flex flex-col items-center gap-2 group transition-all shrink-0"
-                          >
-                            <div className="w-14 h-14 rounded-2xl bg-slate-50 border-2 border-slate-100 group-hover:border-blue-500 group-hover:scale-110 transition-all overflow-hidden flex items-center justify-center shadow-sm">
-                              {prof.avatar_url ? (
-                                <img src={prof.avatar_url} alt={prof.full_name} className="w-full h-full object-cover" />
-                              ) : (
-                                <div className="w-full h-full bg-slate-200 text-slate-400 flex items-center justify-center text-lg font-black">
-                                  {prof.full_name?.charAt(0) || prof.email?.charAt(0)}
-                                </div>
-                              )}
-                            </div>
-                            <div className="flex flex-col items-center">
-                              <span className="text-[9px] font-bold text-slate-700 truncate max-w-[70px]">{prof.full_name || 'User'}</span>
-                              <span className="text-[7px] font-medium text-slate-400 truncate max-w-[70px] uppercase tracking-tighter">{prof.email.split('@')[0]}</span>
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-                      <div className="relative">
-                        <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-100"></div></div>
-                        <div className="relative flex justify-center text-[8px] uppercase font-black text-slate-300 tracking-[0.3em] bg-white px-2">OR</div>
-                      </div>
-                    </div>
-                  )}
-                  <TypableInput icon="fa-envelope" label="Manual Entry Email" type="email" placeholder="type.your.mail@gmail.com" value={loginEmail} onChange={(v: string) => setLoginEmail(v)} required autoFocus />
-                </div>
+                <TypableInput icon="fa-envelope" label="Manual Entry Email" type="email" placeholder="type.your.mail@gmail.com" value={loginEmail} onChange={(v: string) => setLoginEmail(v)} required autoFocus />
               )}
 
               <div className="animate-stagger-2">
