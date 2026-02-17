@@ -137,7 +137,7 @@ const Dashboard: React.FC<DashboardProps> = ({ data, onRefresh, onNavigate }) =>
         artist: studentName,
         album: 'Smart Tutoring Portal',
         artwork: [
-          { src: 'https://via.placeholder.com/512?text=Tutoring', sizes: '512x512', type: 'image/png' }
+          { src: '/logo.png', sizes: '512x512', type: 'image/png' }
         ]
       });
 
