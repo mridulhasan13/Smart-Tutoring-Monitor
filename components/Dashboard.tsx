@@ -178,10 +178,19 @@ const Dashboard: React.FC<DashboardProps> = ({ data, onRefresh, onNavigate }) =>
 
         // 3. Fire Notification
         if ('Notification' in window && Notification.permission === 'granted') {
-          new Notification('Session Started', {
+          const title = 'Session Started';
+          const options = {
             body: `Tracking started for ${student.name}`,
-            icon: '/vite.svg' // specific icon if available
-          });
+            icon: '/logo.png'
+          };
+
+          if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.ready.then(registration => {
+              registration.showNotification(title, options);
+            });
+          } else {
+            new Notification(title, options);
+          }
         }
       }
 
@@ -204,7 +213,8 @@ const Dashboard: React.FC<DashboardProps> = ({ data, onRefresh, onNavigate }) =>
       await onRefresh();
     } catch (error: any) {
       console.error("Failed to start session:", error);
-      alert(`Could not start session: ${error.message || 'Unknown error'}. Please try again.`);
+      // Remove the intrusive debug alert now that we know the cause
+      alert("Could not start session. Please try again.");
       setActiveSession(null);
       if (audioRef.current) audioRef.current.pause();
       clearMediaSession();
@@ -274,10 +284,19 @@ const Dashboard: React.FC<DashboardProps> = ({ data, onRefresh, onNavigate }) =>
       setActiveSession(null);
 
       if ('Notification' in window && Notification.permission === 'granted') {
-        new Notification('Session Ended', {
+        const title = 'Session Ended';
+        const options = {
           body: `Session completed. Duration: ${diffMins} mins.`,
-          icon: '/vite.svg'
-        });
+          icon: '/logo.png'
+        };
+
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.ready.then(registration => {
+            registration.showNotification(title, options);
+          });
+        } else {
+          new Notification(title, options);
+        }
       }
 
       await onRefresh();
