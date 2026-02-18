@@ -200,6 +200,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, onForgotPassword }) => {
           data: {
             full_name: profile.name,
           },
+          emailRedirectTo: `${window.location.origin}/#/dashboard`,
         },
       });
 
