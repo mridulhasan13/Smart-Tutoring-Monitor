@@ -27,8 +27,10 @@ const LiveDuration = ({ startTime }: { startTime: string }) => {
     return () => clearInterval(interval);
   }, [startTime]);
 
-  const m = Math.floor(elapsed / 60);
+  const h = Math.floor(elapsed / 3600);
+  const m = Math.floor((elapsed % 3600) / 60);
   const s = elapsed % 60;
+  if (h > 0) return <span>{`${h}h ${m}m ${s.toString().padStart(2, '0')}s`}</span>;
   return <span>{`${m}m ${s.toString().padStart(2, '0')}s`}</span>;
 };
 
@@ -168,11 +170,17 @@ const Sessions: React.FC<SessionsProps> = ({ data, onRefresh }) => {
                           const start = new Date(session.startTime).getTime();
                           const end = new Date(session.endTime).getTime();
                           const diff = Math.floor((end - start) / 1000);
-                          const m = Math.floor(diff / 60);
+                          const h = Math.floor(diff / 3600);
+                          const m = Math.floor((diff % 3600) / 60);
                           const s = diff % 60;
+                          if (h > 0) return `${h}h ${m}m ${s.toString().padStart(2, '0')}s`;
                           return `${m}m ${s.toString().padStart(2, '0')}s`;
                         }
-                        return `${session.duration || 0}m 00s`;
+                        const m_orig = session.duration || 0;
+                        const h_orig = Math.floor(m_orig / 60);
+                        const mins_orig = m_orig % 60;
+                        if (h_orig > 0) return `${h_orig}h ${mins_orig}m 00s`;
+                        return `${m_orig}m 00s`;
                       })()}
                     </td>
                     <td className="px-8 py-6 whitespace-nowrap">
