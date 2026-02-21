@@ -29,7 +29,11 @@ const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onBack }) => {
             if (error) throw error;
             setMsg('Password reset link sent! Check your email.');
         } catch (err: any) {
-            setError(err.message || 'Failed to send reset link');
+            if (err.message === 'Failed to fetch' || err.name === 'TypeError') {
+                setError('Network Connection Error. Please verify your internet and try again.');
+            } else {
+                setError(err.message || 'Failed to send reset link');
+            }
         } finally {
             setLoading(false);
         }

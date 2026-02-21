@@ -34,7 +34,11 @@ const ResetPassword: React.FC = () => {
                 window.location.href = '/'; // Refresh to clear state
             }, 2000);
         } catch (err: any) {
-            setError(err.message || 'Failed to update password');
+            if (err.message === 'Failed to fetch' || err.name === 'TypeError') {
+                setError('Network Connection Error. Please verify your internet and try again.');
+            } else {
+                setError(err.message || 'Failed to update password');
+            }
         } finally {
             setLoading(false);
         }

@@ -117,7 +117,11 @@ const Login: React.FC<LoginProps> = ({ onLogin, onForgotPassword }) => {
         if (prof.full_name) localStorage.setItem('last_login_name', prof.full_name);
       }
     } catch (err: any) {
-      setError(err.message || 'Failed to login');
+      if (err.message === 'Failed to fetch' || err.name === 'TypeError') {
+        setError('Network Connection Error. Please verify your internet and try again.');
+      } else {
+        setError(err.message || 'Failed to login');
+      }
     } finally {
       setLoading(false);
     }
@@ -234,7 +238,11 @@ const Login: React.FC<LoginProps> = ({ onLogin, onForgotPassword }) => {
         }, 1500);
       }
     } catch (err: any) {
-      setError(err.message || 'Registration failed');
+      if (err.message === 'Failed to fetch' || err.name === 'TypeError') {
+        setError('Network Connection Error. Please verify your internet and try again.');
+      } else {
+        setError(err.message || 'Registration failed');
+      }
     } finally {
       setLoading(false);
     }
