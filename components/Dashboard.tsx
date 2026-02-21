@@ -25,10 +25,10 @@ const Dashboard: React.FC<DashboardProps> = ({ data, onRefresh, onNavigate }) =>
 
   const subjects = useMemo(() => {
     const defaults = ['Math', 'Physics', 'Chemistry', 'Biology', 'English', 'ICT', 'Bangla'];
-    const studentSubjects = data.students.map(s => s.subject).filter(Boolean);
-    const sessionSubjects = data.sessions.map(s => s.subjectTaught).filter(Boolean);
+    const studentSubjects = data.students.flatMap(s => s.subject ? s.subject.split(',').map(sub => sub.trim()) : []);
+    const sessionSubjects = data.sessions.flatMap(s => s.subjectTaught ? s.subjectTaught.split(',').map(sub => sub.trim()) : []);
     const combined = Array.from(new Set([...defaults, ...studentSubjects, ...sessionSubjects]));
-    return combined.sort();
+    return combined.filter(Boolean).sort();
   }, [data.students, data.sessions]);
 
   // Audio Ref for background persistence
