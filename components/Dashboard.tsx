@@ -124,8 +124,8 @@ const Dashboard: React.FC<DashboardProps> = ({ data, onRefresh, onNavigate }) =>
           const formatted = formatTime(newElapsed);
           updateMediaSession(student.name, formatted);
 
-          // Fire/Update notification every minute
-          if (newElapsed > 0 && newElapsed % 60 === 0) {
+          // Fire/Update notification every second for a live "countdown/timer" feel
+          if (newElapsed >= 0) {
             fireTimerNotification(student.name, formatted);
           }
         }
