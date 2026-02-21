@@ -36,8 +36,22 @@ const Dashboard: React.FC<DashboardProps> = ({ data, onRefresh, onNavigate }) =>
 
   useEffect(() => {
     const syncTime = async () => {
+      if (!navigator.onLine) {
+        setSyncStatus('offline');
+        return;
+      }
+
       try {
-        const response = await fetch('https://worldtimeapi.org/api/timezone/Asia/Dhaka');
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
+
+        const response = await fetch('https://worldtimeapi.org/api/timezone/Asia/Dhaka', {
+          signal: controller.signal,
+          cache: 'no-store'
+        });
+
+        clearTimeout(timeoutId);
+
         if (response.ok) {
           const data = await response.json();
           const serverTime = new Date(data.datetime).getTime();
@@ -48,7 +62,10 @@ const Dashboard: React.FC<DashboardProps> = ({ data, onRefresh, onNavigate }) =>
           setSyncStatus('offline');
         }
       } catch (err) {
-        console.warn("Time sync failed, using local time:", err);
+        // Only log warning if it's not a noise error
+        if (err instanceof Error && err.name !== 'AbortError') {
+          console.warn("Time sync failed, using local time:", err.message);
+        }
         setSyncStatus('offline');
       }
     };

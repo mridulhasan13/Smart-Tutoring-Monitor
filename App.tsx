@@ -24,6 +24,8 @@ const App: React.FC = () => {
     return (localStorage.getItem('activeView') as View) || 'dashboard';
   });
   const [preselectedStudentId, setPreselectedStudentId] = useState<string | null>(null);
+  const [isOffline, setIsOffline] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const handleSetView = (view: View, studentId?: string) => {
     if (studentId) {
@@ -75,8 +77,20 @@ const App: React.FC = () => {
   });
 
   const refreshData = async () => {
-    const newData = await dbService.getData();
-    setData(newData);
+    if (isRefreshing) return;
+    setIsRefreshing(true);
+    try {
+      const newData = await dbService.getData();
+      setData(newData);
+      setIsOffline(false);
+    } catch (error: any) {
+      console.error("Data Refresh Error:", error);
+      if (error.message === 'Failed to fetch' || error.name === 'TypeError') {
+        setIsOffline(true);
+      }
+    } finally {
+      setIsRefreshing(false);
+    }
   };
 
   const handleLogout = async () => {
@@ -121,6 +135,21 @@ const App: React.FC = () => {
     <ThemeProvider>
       <Layout activeView={activeView} setView={handleSetView} onLogout={handleLogout} profile={data.tutorProfile}>
         <main className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-4 md:py-10">
+          {isOffline && (
+            <div className="mb-6 p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-between text-amber-700 dark:text-amber-400 animate-in slide-in-from-top duration-300">
+              <div className="flex items-center gap-3">
+                <i className="fas fa-wifi-slash"></i>
+                <p className="text-xs font-bold uppercase tracking-widest">Connectivity Issue Detected • Using Cached Data</p>
+              </div>
+              <button
+                onClick={refreshData}
+                disabled={isRefreshing}
+                className="px-4 py-2 bg-amber-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-amber-600 transition-all disabled:opacity-50"
+              >
+                {isRefreshing ? 'Retrying...' : 'Retry Connection'}
+              </button>
+            </div>
+          )}
           {renderContent()}
         </main>
       </Layout>
