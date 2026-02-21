@@ -24,7 +24,7 @@ const Dashboard: React.FC<DashboardProps> = ({ data, onRefresh, onNavigate }) =>
   const [isStarting, setIsStarting] = useState(false);
 
   const subjects = useMemo(() => {
-    const defaults = ['Math', 'Physics', 'Chemistry', 'Biology'];
+    const defaults = ['Math', 'Physics', 'Chemistry', 'Biology', 'English', 'ICT', 'Bangla'];
     const studentSubjects = data.students.map(s => s.subject).filter(Boolean);
     const sessionSubjects = data.sessions.map(s => s.subjectTaught).filter(Boolean);
     const combined = Array.from(new Set([...defaults, ...studentSubjects, ...sessionSubjects]));

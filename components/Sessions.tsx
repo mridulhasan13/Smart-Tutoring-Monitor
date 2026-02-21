@@ -334,6 +334,9 @@ const Sessions: React.FC<SessionsProps> = ({ data, onRefresh }) => {
                   <option value="Physics">Physics</option>
                   <option value="Chemistry">Chemistry</option>
                   <option value="Biology">Biology</option>
+                  <option value="English">English</option>
+                  <option value="ICT">ICT</option>
+                  <option value="Bangla">Bangla</option>
                 </select>
               </div>
               <div className="grid grid-cols-2 gap-4">
