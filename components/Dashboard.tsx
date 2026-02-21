@@ -23,6 +23,14 @@ const Dashboard: React.FC<DashboardProps> = ({ data, onRefresh, onNavigate }) =>
   const [isClosing, setIsClosing] = useState(false);
   const [isStarting, setIsStarting] = useState(false);
 
+  const subjects = useMemo(() => {
+    const defaults = ['Math', 'Physics', 'Chemistry', 'Biology'];
+    const studentSubjects = data.students.map(s => s.subject).filter(Boolean);
+    const sessionSubjects = data.sessions.map(s => s.subjectTaught).filter(Boolean);
+    const combined = Array.from(new Set([...defaults, ...studentSubjects, ...sessionSubjects]));
+    return combined.sort();
+  }, [data.students, data.sessions]);
+
   // Audio Ref for background persistence
   const audioRef = React.useRef<HTMLAudioElement | null>(null);
 
@@ -74,7 +82,6 @@ const Dashboard: React.FC<DashboardProps> = ({ data, onRefresh, onNavigate }) =>
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (activeSession) {
-      // Initialize with correct difference immediately to avoid 1s delay or 0s flash
       const updateTimer = () => {
         const startTimeStr = activeSession.startTime;
         if (!startTimeStr) {
@@ -82,7 +89,6 @@ const Dashboard: React.FC<DashboardProps> = ({ data, onRefresh, onNavigate }) =>
           return;
         }
 
-        // Ensure robust parsing (handle possible space instead of T from some DB returns)
         const normalizeISO = (str: string) => str.replace(' ', 'T');
         const start = new Date(normalizeISO(startTimeStr)).getTime();
 
@@ -92,10 +98,23 @@ const Dashboard: React.FC<DashboardProps> = ({ data, onRefresh, onNavigate }) =>
         }
 
         const currentLocal = new Date().getTime();
-        setElapsedSeconds(Math.max(0, Math.floor((currentLocal - start) / 1000)));
+        const newElapsed = Math.max(0, Math.floor((currentLocal - start) / 1000));
+        setElapsedSeconds(newElapsed);
+
+        // Update Media Session and periodic notification
+        const student = data.students.find(s => s.id === activeSession.studentId);
+        if (student) {
+          const formatted = formatTime(newElapsed);
+          updateMediaSession(student.name, formatted);
+
+          // Fire/Update notification every minute
+          if (newElapsed > 0 && newElapsed % 60 === 0) {
+            fireTimerNotification(student.name, formatted);
+          }
+        }
       };
 
-      updateTimer(); // Run once immediately
+      updateTimer();
       interval = setInterval(updateTimer, 1000);
     } else {
       setElapsedSeconds(0);
@@ -105,8 +124,10 @@ const Dashboard: React.FC<DashboardProps> = ({ data, onRefresh, onNavigate }) =>
 
   const formatTime = (totalSeconds: number) => {
     if (isNaN(totalSeconds) || totalSeconds < 0) return "0m 00s";
-    const m = Math.floor(totalSeconds / 60);
+    const h = Math.floor(totalSeconds / 3600);
+    const m = Math.floor((totalSeconds % 3600) / 60);
     const s = Math.floor(totalSeconds % 60);
+    if (h > 0) return `${h}h ${m}m ${s.toString().padStart(2, '0')}s`;
     return `${m}m ${s.toString().padStart(2, '0')}s`;
   };
 
@@ -130,11 +151,32 @@ const Dashboard: React.FC<DashboardProps> = ({ data, onRefresh, onNavigate }) =>
     }
   }, []);
 
-  const updateMediaSession = (studentName: string) => {
+  const fireTimerNotification = (studentName: string, timeStr: string) => {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      const title = 'Session in Progress';
+      const options = {
+        body: `${studentName} • ${timeStr}`,
+        icon: '/logo.png',
+        tag: 'session-timer', // Fixed tag to update existing notification
+        silent: true, // Don't buzz every minute
+        renotify: false // Don't alert if existing
+      };
+
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.ready.then(registration => {
+          registration.showNotification(title, options);
+        });
+      } else {
+        new Notification(title, options);
+      }
+    }
+  };
+
+  const updateMediaSession = (studentName: string, timeStr?: string) => {
     if ('mediaSession' in navigator) {
       navigator.mediaSession.metadata = new MediaMetadata({
         title: 'Active Tutoring Session',
-        artist: studentName,
+        artist: `${studentName}${timeStr ? ` • ${timeStr}` : ''}`,
         album: 'Smart Tutoring Portal',
         artwork: [
           { src: '/logo.png', sizes: '512x512', type: 'image/png' }
@@ -431,8 +473,8 @@ const Dashboard: React.FC<DashboardProps> = ({ data, onRefresh, onNavigate }) =>
             )}
             <div className="flex-1 w-full space-y-3">
               <label className="block text-[8px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest text-center md:text-left">Subject Selection</label>
-              <div className="grid grid-cols-4 md:grid-cols-2 gap-2">
-                {['Math', 'Physics', 'Chemistry', 'Biology'].map(sub => (
+              <div className="grid grid-cols-4 md:grid-cols-2 gap-2 max-h-40 overflow-y-auto pr-1 custom-scrollbar">
+                {subjects.map(sub => (
                   <button
                     key={sub}
                     disabled={!!activeSession}
